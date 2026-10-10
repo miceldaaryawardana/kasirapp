@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="KasirKu - Aplikasi web kasir Point of Sale (POS) modern, bersih, dan bertaraf fintech/SaaS berbasis HTML5, CSS3, dan JavaScript vanilla.">
+  <title>KasirKu POS - Sistem Kasir Pintar & Manajemen Transaksi Toko</title>
+
+  <!-- Favicon Emoji Inline -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+
+  <!-- Satu-satunya sumber eksternal yang diizinkan: Google Font Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- TOAST NOTIFICATION CONTAINER (POJOK KANAN ATAS) -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- HEADER DENGAN SENTUHAN GLASSMORPHISM RINGAN -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+            <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h12"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title-wrap">
+            <h1 class="brand-title">KasirKu</h1>
+            <span class="brand-badge-pro">PRO POS</span>
+          </div>
+          <p class="brand-subtitle">Sistem Kasir Pintar &amp; Manajemen Transaksi Toko</p>
+        </div>
+      </div>
+
+      <!-- JAM DIGITAL REAL-TIME & STATUS KONEKSI -->
+      <div class="header-status-group">
+        <div class="live-clock-card" id="clockWrapper" title="Waktu Sistem Kasir">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span id="liveClock" class="clock-text">--:--:-- WIB</span>
+        </div>
+        <div class="header-badge" role="status">
+          <span class="status-indicator"></span>
+          <span>Sistem Siap Digunakan</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- KONTEN UTAMA DUA KOLOM -->
+  <main class="main-wrapper">
+    <div class="pos-layout">
+
+      <!-- ==============================================
+           KOLOM KIRI: FORM TRANSAKSI & KERANJANG
+           ============================================== -->
+      <section class="col-form" aria-labelledby="form-heading">
+        <h2 id="form-heading" class="visually-hidden">Formulir Kasir dan Keranjang Belanja</h2>
+
+        <!-- KARTU 1: DATA PELANGGAN -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">1. Data Pelanggan</h3>
+              <p class="card-desc">Identitas pelanggan dan status keanggotaan toko</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Komponen 1: TextBox Nama Pelanggan -->
+            <div class="form-group">
+              <label for="namaPelanggan" class="form-label">
+                Nama Pelanggan <span class="required-mark" aria-hidden="true">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon left" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </span>
+                <input type="text" id="namaPelanggan" name="namaPelanggan" class="form-control with-icon"
+                  placeholder="Contoh: Budi Santoso" autocomplete="off" aria-describedby="error-namaPelanggan">
+              </div>
+              <div class="error-message" id="error-namaPelanggan" aria-live="polite"></div>
+            </div>
+
+            <!-- Komponen 4: Checkbox Member (Tampil Sebagai Toggle Switch Kustom) -->
+            <div class="form-group toggle-group">
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Pelanggan Member</span>
+                  <span class="toggle-desc">Diskon khusus 10% untuk pembelanjaan &ge; Rp 100.000</span>
+                </div>
+                <label class="switch" for="isMember">
+                  <input type="checkbox" id="isMember" name="isMember">
+                  <span class="slider" aria-hidden="true"></span>
+                  <span class="visually-hidden">Aktifkan status member</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KARTU 2: PILIH PRODUK & KERANJANG -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon indigo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-3z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">2. Pilih Barang &amp; Keranjang</h3>
+              <p class="card-desc">Tambahkan produk belanja ke daftar keranjang</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="product-input-grid">
+              <!-- Komponen 2: ComboBox / Select Barang -->
+              <div class="form-group col-span-2">
+                <label for="pilihBarang" class="form-label">
+                  Pilih Produk <span class="required-mark" aria-hidden="true">*</span>
+                </label>
+                <div class="select-wrapper">
+                  <select id="pilihBarang" name="pilihBarang" class="form-control" aria-describedby="error-pilihBarang">
+                    <option value="">-- Pilih Produk Belanja --</option>
+                  </select>
+                  <span class="select-arrow" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </div>
+                <div class="price-preview-badge" id="pricePreviewBadge">
+                  <span class="badge-label">Harga Satuan:</span>
+                  <span class="badge-price" id="labelHargaSatuan">Pilih barang terlebih dahulu</span>
+                </div>
+                <div class="error-message" id="error-pilihBarang" aria-live="polite"></div>
+              </div>
+
+              <!-- Komponen 3: Input Number Jumlah Beli -->
+              <div class="form-group col-span-1">
+                <label for="jumlahBeli" class="form-label">
+                  Jumlah Beli <span class="required-mark" aria-hidden="true">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="jumlahBeli" name="jumlahBeli" class="form-control text-center font-semibold"
+                    min="1" max="100" value="1" aria-describedby="error-jumlahBeli">
+                  <span class="input-suffix">Pcs</span>
+                </div>
+                <div class="error-message" id="error-jumlahBeli" aria-live="polite"></div>
+              </div>
+
+              <!-- Komponen 6: Button Tambah ke Keranjang (Warna Accent) -->
+              <div class="form-group col-span-1 add-btn-container">
+                <button type="button" id="btnTambah" class="btn btn-accent btn-block">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                  </svg>
+                  <span>+ Tambah ke Keranjang</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="error-message" id="error-keranjangForm" aria-live="polite"></div>
+
+            <!-- TABEL DAFTAR KERANJANG AKTIF -->
+            <div class="cart-box">
+              <div class="cart-box-header">
+                <span class="cart-box-title">Daftar Item Keranjang</span>
+                <span class="badge-pill" id="badgeItemCount">0 Item</span>
+              </div>
+              <div class="table-responsive">
+                <table class="cart-table" id="tabelKeranjang">
+                  <thead>
+                    <tr>
+                      <th class="w-10">No</th>
+                      <th class="text-left">Nama Produk</th>
+                      <th class="text-right">Harga</th>
+                      <th class="text-center">Qty</th>
+                      <th class="text-right">Subtotal</th>
+                      <th class="text-center w-12">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbodyKeranjang">
+                    <tr class="empty-row">
+                      <td colspan="6" class="text-center empty-cart-td">
+                        <div class="empty-cart-state">
+                          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                          </svg>
+                          <span>Keranjang kosong. Pilih produk dan klik tombol "+ Tambah".</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="cart-footer-bar">
+                <span class="cart-footer-label">Subtotal Belanja:</span>
+                <span class="cart-footer-value" id="labelSubtotalBelanja">Rp 0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KARTU 3: PEMBAYARAN KASIR -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon emerald">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                <line x1="2" y1="10" x2="22" y2="10"></line>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">3. Pembayaran Transaksi</h3>
+              <p class="card-desc">Input uang bayar pelanggan &amp; kalkulasi kembalian</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Komponen 5: Input Number Uang Bayar -->
+            <div class="form-group">
+              <label for="uangBayar" class="form-label">
+                Uang Bayar Pelanggan (Rp) <span class="required-mark" aria-hidden="true">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-prefix" aria-hidden="true">Rp</span>
+                <input type="number" id="uangBayar" name="uangBayar" class="form-control font-large" min="0" step="500"
+                  placeholder="0" aria-describedby="error-uangBayar">
+              </div>
+              <div class="error-message" id="error-uangBayar" aria-live="polite"></div>
+            </div>
+
+            <!-- KOTAK PREVIEW REAL-TIME KEMBALIAN -->
+            <div class="quick-summary-box">
+              <div class="quick-summary-row">
+                <span class="qs-label">Total Tagihan:</span>
+                <span class="qs-value font-semibold" id="previewTotalBayar">Rp 0</span>
+              </div>
+              <div class="quick-summary-row">
+                <span class="qs-label">Status Kembalian:</span>
+                <span class="qs-value highlight-kembali" id="previewKembalian">Rp 0</span>
+              </div>
+            </div>
+
+            <!-- Komponen 7: Button Hitung & Bayar serta Reset -->
+            <div class="action-btn-row">
+              <button type="button" id="btnHitung" class="btn btn-primary btn-calc">
+                <span class="btn-spinner" id="btnSpinner" aria-hidden="true"></span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round" class="btn-icon" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span id="btnHitungText">Hitung &amp; Bayar</span>
+              </button>
+
+              <button type="button" id="btnReset" class="btn btn-ghost">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                  <path d="M3 3v5h5"></path>
+                </svg>
+                <span>Reset Form</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==============================================
+           KOLOM KANAN: STRUK PEMBAYARAN (STICKY CARD)
+           ============================================== -->
+      <section class="col-receipt" aria-labelledby="receipt-heading">
+        <h2 id="receipt-heading" class="visually-hidden">Struk Pembayaran Toko</h2>
+
+        <div class="receipt-sticky-container">
+          <!-- ELEMEN STRUK DENGAN TEPI BAWAH BERGERIGI (THERMAL PAPER EFFECT) -->
+          <article class="receipt-paper" id="receiptPaper">
+
+            <!-- HEADER STRUK -->
+            <div class="receipt-header">
+              <div class="receipt-store-logo">KASIRKU POS</div>
+              <h3 class="receipt-heading-title">STRUK PEMBAYARAN</h3>
+              <p class="receipt-store-address">Pusat Grosir Modern • Lt. 1 No. 88, Jakarta</p>
+
+              <div class="receipt-divider dashed" aria-hidden="true"></div>
+
+              <!-- META INFORMASI TRANSAKSI -->
+              <div class="receipt-meta-grid">
+                <div class="meta-row">
+                  <span class="meta-label">Nama Pelanggan</span>
+                  <span class="meta-val" id="strukNamaPelanggan">-</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label">Status Member</span>
+                  <span class="meta-val" id="strukStatusMember">-</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label">Waktu Transaksi</span>
+                  <span class="meta-val" id="strukWaktuTransaksi">-</span>
+                </div>
+              </div>
+
+              <div class="receipt-divider dashed" aria-hidden="true"></div>
+            </div>
+
+            <!-- BADAN STRUK: TABEL DETAIL ITEM (MONOSPACE) -->
+            <div class="receipt-body">
+
+              <!-- EMPTY STATE JIKA BELUM ADA TRANSAKSI -->
+              <div class="receipt-empty-view" id="receiptEmptyView">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <p class="receipt-empty-title">Belum Ada Transaksi Dihitung</p>
+                <p class="receipt-empty-desc">Isi formulir dan klik "Hitung &amp; Bayar" untuk mencetak rincian struk
+                  belanja.</p>
+              </div>
+
+              <!-- VIEW RINCIAN AKTIF -->
+              <div class="receipt-filled-view hidden" id="receiptFilledView">
+                <table class="receipt-items-table">
+                  <thead>
+                    <tr>
+                      <th class="text-left">Item</th>
+                      <th class="text-center">Qty</th>
+                      <th class="text-right">Harga</th>
+                      <th class="text-right">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="strukItemTbody">
+                    <!-- Diisi secara dinamis via script.js -->
+                  </tbody>
+                </table>
+
+                <div class="receipt-divider dashed" aria-hidden="true"></div>
+
+                <!-- KALKULASI FINANSIAL -->
+                <div class="receipt-finance-grid">
+                  <div class="finance-row">
+                    <span>Subtotal</span>
+                    <span id="strukSubtotal" class="font-tabular">Rp 0</span>
+                  </div>
+                  <div class="finance-row discount-text">
+                    <span>Diskon <span id="strukPersenDiskon">(0%)</span></span>
+                    <span id="strukNilaiDiskon" class="font-tabular">- Rp 0</span>
+                  </div>
+                  <div class="finance-row">
+                    <span>PPN (11%)</span>
+                    <span id="strukNilaiPPN" class="font-tabular">Rp 0</span>
+                  </div>
+
+                  <div class="receipt-divider solid" aria-hidden="true"></div>
+
+                  <!-- TOTAL BAYAR BESAR & PRIMER -->
+                  <div class="finance-row total-bayar-row">
+                    <span class="total-label">TOTAL BAYAR</span>
+                    <span class="total-value font-tabular" id="strukTotalBayar">Rp 0</span>
+                  </div>
+
+                  <div class="finance-row">
+                    <span>Uang Bayar</span>
+                    <span id="strukUangBayar" class="font-tabular">Rp 0</span>
+                  </div>
+                  <div class="finance-row kembalian-row">
+                    <span class="kembalian-label">Kembalian</span>
+                    <span id="strukKembalian" class="kembalian-value font-tabular">Rp 0</span>
+                  </div>
+
+                  <!-- SISA PECAHAN MENGGUNAKAN OPERATOR MODULO (%) -->
+                  <div class="finance-row modulo-note" id="strukModuloRow">
+                    <span class="modulo-title">Sisa Pembulatan (ke Rp 100)</span>
+                    <span id="strukSisaPecahan" class="font-tabular">Rp 0</span>
+                  </div>
+                </div>
+
+                <div class="receipt-divider dashed" aria-hidden="true"></div>
+
+                <!-- BADGE STATUS LUNAS / UANG KURANG -->
+                <div class="receipt-badge-wrap">
+                  <span class="status-pill waiting" id="strukStatusBadge">MENUNGGU PEMBAYARAN</span>
+                </div>
+
+                <!-- FOOTER STRUK & BARCODE -->
+                <footer class="receipt-footer">
+                  <p class="receipt-thanks">Terima kasih telah berbelanja di KasirKu!</p>
+                  <div class="receipt-barcode" aria-label="Barcode Transaksi">||||| ||| ||||||| |||| |||||| |||||</div>
+                  <p class="receipt-policy">Barang yang sudah dibeli tidak dapat ditukar kembali</p>
+                </footer>
+              </div>
+
+            </div>
+
+            <!-- TEPI BAWAH BERGERIGI CSS (ZIG-ZAG CUT EFFECT) -->
+            <div class="receipt-sawtooth-bottom" aria-hidden="true"></div>
+
+          </article>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER APLIKASI -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 <strong>KasirKu POS</strong> • Aplikasi Kasir Front-End Modern (HTML5, CSS3, JavaScript Vanilla).
+        Tanpa Framework &amp; Library Eksternal.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
